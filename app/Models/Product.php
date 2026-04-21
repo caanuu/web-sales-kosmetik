@@ -79,7 +79,7 @@ class Product extends Model
 
     public function getEffectivePriceAttribute(): float
     {
-        return $this->discount_price ?? $this->price;
+        return (float) ($this->discount_price ?? $this->price);
     }
 
     public function getDiscountPercentAttribute(): int
