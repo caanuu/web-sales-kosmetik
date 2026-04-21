@@ -3,14 +3,21 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {{-- Breadcrumb --}}
-    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
-        <a href="{{ route('home') }}" class="hover:text-primary-500">Home</a>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <a href="{{ route('products.index') }}" class="hover:text-primary-500">Produk</a>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="text-gray-800 font-medium truncate max-w-[200px]">{{ $product->name }}</span>
-    </nav>
+    {{-- Header Action & Breadcrumb --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md w-fit">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+        
+        <nav class="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+            <a href="{{ route('home') }}" class="hover:text-primary-500">Home</a>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <a href="{{ route('products.index') }}" class="hover:text-primary-500">Produk</a>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="text-gray-800 font-medium truncate max-w-[150px] md:max-w-[200px]">{{ $product->name }}</span>
+        </nav>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {{-- Image Gallery --}}
@@ -32,7 +39,9 @@
             @if($product->images->count() > 1)
             <div class="flex gap-3 mt-4 overflow-x-auto pb-2">
                 @foreach($product->images as $image)
-                <button onclick="document.getElementById('main-image').src='{{ asset('storage/' . $image->image_path) }}'"
+                <button type="button" 
+                    data-image-url="{{ asset('storage/' . $image->image_path) }}"
+                    onclick="document.getElementById('main-image').src = this.dataset.imageUrl"
                     class="w-20 h-20 flex-shrink-0 rounded-xl border-2 border-gray-200 hover:border-primary-400 overflow-hidden transition-colors focus:border-primary-500 focus:ring-2 focus:ring-primary-200">
                     <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                 </button>
@@ -139,6 +148,31 @@
                     {!! nl2br(e($product->description ?? 'Tidak ada deskripsi.')) !!}
                 </div>
             </div>
+
+            @if($product->keterangan)
+            <div class="mt-4 p-4 bg-primary-50 rounded-xl border border-primary-100">
+                <h3 class="font-semibold text-primary-700 mb-3 text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Spesifikasi Produk
+                </h3>
+                <div class="flex flex-col gap-2.5 text-sm text-primary-800">
+                    @foreach(explode('|', $product->keterangan) as $spec)
+                        @php $parts = explode(':', $spec, 2); @endphp
+                        @if(count($parts) === 2 && trim($parts[0]) !== '')
+                            <div class="flex items-start gap-4">
+                                <span class="font-medium text-primary-600 w-1/3 shrink-0">{{ trim($parts[0]) }}</span>
+                                <span class="flex-1 leading-relaxed">{{ trim($parts[1]) }}</span>
+                            </div>
+                        @elseif(trim($spec) !== '')
+                            <div class="flex items-start gap-2">
+                                <span class="text-primary-400 mt-0.5">•</span>
+                                <span class="flex-1 leading-relaxed">{{ trim($spec) }}</span>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+            @endif
 
             @if($product->weight)
             <div class="mt-4 text-sm text-gray-500">

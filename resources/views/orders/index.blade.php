@@ -3,7 +3,13 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">📋 Riwayat Pesanan</h1>
+    <div class="flex items-center gap-4 mb-6">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+        <h1 class="text-2xl font-bold text-gray-800">📋 Riwayat Pesanan</h1>
+    </div>
 
     @if($orders->count() > 0)
     <div class="space-y-4">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\View\View;
@@ -11,6 +12,8 @@ class HomeController extends Controller
 {
     public function index(): View
     {
+        $banners = Banner::active()->get();
+
         $featuredProducts = Product::with(['primaryImage', 'approvedReviews'])
             ->where('is_active', true)
             ->where('is_featured', true)
@@ -28,6 +31,6 @@ class HomeController extends Controller
             ->withCount('products')
             ->get();
 
-        return view('home', compact('featuredProducts', 'latestProducts', 'categories'));
+        return view('home', compact('banners', 'featuredProducts', 'latestProducts', 'categories'));
     }
 }

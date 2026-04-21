@@ -65,7 +65,12 @@ class ProductController extends Controller
     public function update(ProductRequest $request, Product $product): RedirectResponse
     {
         $data = $request->validated();
-        $data['slug'] = Str::slug($request->name) . '-' . Str::random(5);
+        
+        // Only update slug if it's empty in database
+        if (!$product->slug) {
+            $data['slug'] = Str::slug($request->name) . '-' . Str::random(5);
+        }
+        
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_active'] = $request->boolean('is_active', true);
         unset($data['images']);

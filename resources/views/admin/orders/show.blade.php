@@ -55,6 +55,9 @@
             <div class="text-sm space-y-2 text-gray-600">
                 <p><strong>Penerima:</strong> {{ $order->recipient_name }}</p>
                 <p><strong>Telepon:</strong> {{ $order->recipient_phone }}</p>
+                @if($order->shippingArea)
+                    <p><strong>Wilayah Tujuan:</strong> {{ $order->shippingArea->name }}</p>
+                @endif
                 <p><strong>Alamat:</strong> {{ $order->shipping_address }}</p>
                 @if($order->notes) <p><strong>Catatan:</strong> {{ $order->notes }}</p> @endif
             </div>

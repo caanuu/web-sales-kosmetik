@@ -52,14 +52,18 @@
 
                 {{-- Nav Links --}}
                 <div class="hidden md:flex items-center gap-1">
+                    <a href="{{ route('home') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all">Beranda</a>
                     <a href="{{ route('products.index') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all">Produk</a>
 
-                    @auth
-                        <a href="{{ route('wishlist.index') }}" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                            <span>Wishlist</span>
-                        </a>
+                    {{-- Theme Toggle --}}
+                    <button onclick="toggleTheme()" class="theme-toggle mx-2" title="Ganti Tema" aria-label="Toggle dark mode">
+                        <span class="theme-toggle-knob">
+                            <svg class="theme-toggle-icon sun-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+                            <svg class="theme-toggle-icon moon-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+                        </span>
+                    </button>
 
+                    @auth
                         <a href="{{ route('cart.index') }}" class="relative px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                             <span>Keranjang</span>
@@ -81,6 +85,7 @@
                             </button>
                             <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 animate-slide-down">
                                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">Profil Saya</a>
+                                <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">Wishlist Favorite</a>
                                 <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">Riwayat Pesanan</a>
                                 @if(auth()->user()->isAdmin())
                                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600">Admin Panel</a>
@@ -111,7 +116,14 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
                        class="w-full pl-4 pr-4 py-2.5 rounded-full border border-pink-200 focus:border-primary-400 text-sm">
             </form>
+            <a href="{{ route('home') }}" class="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg">Beranda</a>
             <a href="{{ route('products.index') }}" class="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg">Produk</a>
+            <button onclick="toggleTheme()" class="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg">
+                <svg class="w-4 h-4 dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+                <svg class="w-4 h-4 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+                <span class="dark:hidden">Mode Gelap</span>
+                <span class="hidden dark:inline">Mode Terang</span>
+            </button>
             @auth
                 <a href="{{ route('wishlist.index') }}" class="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg">Wishlist</a>
                 <a href="{{ route('cart.index') }}" class="block px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 rounded-lg">Keranjang</a>

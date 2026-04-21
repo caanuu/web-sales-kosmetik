@@ -11,12 +11,30 @@ class ProductRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->has('spec_keys') && is_array($this->spec_keys)) {
+            $specs = [];
+            foreach($this->spec_keys as $index => $key) {
+                $key = trim($key);
+                $val = trim($this->spec_values[$index] ?? '');
+                if ($key !== '') {
+                    $specs[] = $key . ': ' . $val;
+                }
+            }
+            $this->merge([
+                'keterangan' => empty($specs) ? null : implode('|', $specs),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $rules = [
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'keterangan' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_price' => ['nullable', 'numeric', 'min:0', 'lt:price'],
             'stock' => ['required', 'integer', 'min:0'],

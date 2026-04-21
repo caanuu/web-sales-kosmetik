@@ -29,7 +29,72 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
-                <textarea name="description" rows="4" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm resize-none">{{ old('description') }}</textarea>
+            <div class="pt-6 mt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-4">
+                    <label class="block text-sm font-semibold text-gray-800">Spesifikasi Tambahan</label>
+                    <button type="button" id="add-spec-btn" class="text-xs text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg font-medium hover:bg-primary-100 transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Spesifikasi
+                    </button>
+                </div>
+                
+                <div class="space-y-3" id="specs-container">
+                    @php
+                        $specKeys = old('spec_keys', ['']);
+                        $specValues = old('spec_values', ['']);
+                    @endphp
+                    @foreach($specKeys as $index => $keyVal)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start spec-row bg-gray-50 p-4 rounded-xl relative border border-gray-100">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi (Kolom)</label>
+                                <input type="text" name="spec_keys[]" value="{{ $keyVal }}" placeholder="Contoh: Ukuran, Warna, Material"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                            </div>
+                            <div class="pr-8">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Nilai / Isi Spesifikasi</label>
+                                <input type="text" name="spec_values[]" value="{{ $specValues[$index] ?? '' }}" placeholder="Contoh: 50ml, Merah, Canvas"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                            </div>
+                            <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus spesifikasi ini">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+                @error('keterangan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const container = document.getElementById('specs-container');
+                        const addBtn = document.getElementById('add-spec-btn');
+
+                        addBtn.addEventListener('click', function() {
+                            const newRow = document.createElement('div');
+                            newRow.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start spec-row bg-gray-50 p-4 rounded-xl relative border border-gray-100';
+                            newRow.innerHTML = `
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi (Kolom)</label>
+                                    <input type="text" name="spec_keys[]" placeholder="Contoh: Ukuran, Warna, Material" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                                </div>
+                                <div class="pr-8">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Nilai / Isi Spesifikasi</label>
+                                    <input type="text" name="spec_values[]" placeholder="Contoh: 50ml, Merah, Canvas" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                                </div>
+                                <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus spesifikasi ini"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            `;
+                            container.appendChild(newRow);
+                        });
+
+                        container.addEventListener('click', function(e) {
+                            if(e.target.closest('.remove-spec-btn')) {
+                                const rows = container.querySelectorAll('.spec-row');
+                                if(rows.length > 0) {
+                                    e.target.closest('.spec-row').remove();
+                                }
+                            }
+                        });
+                    });
+                </script>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

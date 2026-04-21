@@ -3,7 +3,13 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">🛒 Keranjang Belanja</h1>
+    <div class="flex items-center gap-4 mb-6">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Kembali
+        </a>
+        <h1 class="text-2xl font-bold text-gray-800">🛒 Keranjang Belanja</h1>
+    </div>
 
     @if($carts->count() > 0)
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -67,12 +73,12 @@
                     </div>
                     <div class="flex justify-between text-gray-600">
                         <span>Ongkos Kirim</span>
-                        <span class="text-green-600 font-medium">Rp 15.000</span>
+                        <span class="text-gray-400 text-xs mt-0.5">Dihitung saat Checkout</span>
                     </div>
                     <hr class="border-gray-100">
                     <div class="flex justify-between font-bold text-gray-800 text-base">
-                        <span>Total</span>
-                        <span class="text-primary-600">Rp {{ number_format($subtotal + 15000, 0, ',', '.') }}</span>
+                        <span>Total Sementara</span>
+                        <span class="text-primary-600">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                     </div>
                 </div>
 

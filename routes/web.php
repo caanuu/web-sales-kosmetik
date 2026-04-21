@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -101,4 +102,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/reviews/{review}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
     Route::put('/reviews/{review}/reject', [AdminReviewController::class, 'reject'])->name('reviews.reject');
     Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // Banners
+    Route::resource('banners', AdminBannerController::class)->except(['show']);
 });

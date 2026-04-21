@@ -1,3 +1,26 @@
+// ===== DARK MODE =====
+function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    }
+}
+// Apply theme immediately (before DOM ready) to prevent flash
+initTheme();
+
+function toggleTheme() {
+    const html = document.documentElement;
+    html.classList.add('transitioning');
+    html.classList.toggle('dark');
+    const isDark = html.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Remove transition class after animation completes
+    setTimeout(() => html.classList.remove('transitioning'), 500);
+}
+
+// Expose globally for onclick
+window.toggleTheme = toggleTheme;
+
 // Cart count badge update
 function updateCartBadge() {
     const badge = document.getElementById('cart-badge');

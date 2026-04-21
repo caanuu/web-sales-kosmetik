@@ -13,6 +13,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'shipping_area_id',
         'order_number',
         'recipient_name',
         'recipient_phone',
@@ -42,6 +43,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shippingArea(): BelongsTo
+    {
+        return $this->belongsTo(ShippingArea::class);
     }
 
     public static function generateOrderNumber(): string
