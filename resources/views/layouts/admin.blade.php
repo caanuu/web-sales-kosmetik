@@ -56,7 +56,7 @@
                 </svg>
             </div>
             <div>
-                <span class="text-lg font-bold">GlowUp</span>
+                <span class="text-lg font-bold">Sahata Cosmetic</span>
                 <span class="block text-xs text-purple-300">Admin Panel</span>
             </div>
         </div>
