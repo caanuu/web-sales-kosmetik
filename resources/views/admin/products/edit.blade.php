@@ -8,6 +8,7 @@
         <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf @method('PUT')
 
+            {{-- Nama & Kategori --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Produk <span class="text-red-500">*</span></label>
@@ -25,25 +26,29 @@
                 </div>
             </div>
 
+            {{-- Deskripsi --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
-            <div class="pt-6 mt-4 border-t border-gray-100">
-                <div class="flex items-center justify-between mb-4">
+                <textarea name="description" rows="3"
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm resize-none">{{ old('description', $product->description) }}</textarea>
+            </div>
+
+            {{-- Spesifikasi --}}
+            <div class="pt-5 border-t border-gray-100">
+                <div class="flex items-center justify-between mb-3">
                     <label class="block text-sm font-semibold text-gray-800">Spesifikasi Tambahan</label>
-                    <button type="button" id="add-spec-btn" class="text-xs text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg font-medium hover:bg-primary-100 transition-colors flex items-center gap-1">
+                    <button type="button" id="add-spec-btn"
+                        class="text-xs text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg font-medium hover:bg-primary-100 transition-colors flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Tambah Spesifikasi
                     </button>
                 </div>
-                
                 <div class="space-y-3" id="specs-container">
                     @php
-                        $specKeys = [];
+                        $specKeys   = [];
                         $specValues = [];
-                        
-                        // Parse from old input (validation fail) or existing product data
-                        if(old('spec_keys')) {
-                            $specKeys = old('spec_keys');
+                        if (old('spec_keys')) {
+                            $specKeys   = old('spec_keys');
                             $specValues = old('spec_values', []);
                         } else {
                             $keteranganStr = $product->keterangan ?? '';
@@ -51,77 +56,39 @@
                                 foreach(explode('|', str_replace(["\r\n", "\n"], "|", $keteranganStr)) as $spec) {
                                     $parts = explode(':', $spec, 2);
                                     if(count($parts) === 2 && trim($parts[0]) !== '') {
-                                        $specKeys[] = trim($parts[0]);
+                                        $specKeys[]   = trim($parts[0]);
                                         $specValues[] = trim($parts[1]);
                                     } elseif (trim($spec) !== '') {
-                                        $specKeys[] = 'Lainnya';
+                                        $specKeys[]   = 'Lainnya';
                                         $specValues[] = trim($spec);
                                     }
                                 }
                             }
                         }
-                        
-                        // Default to empty array if still empty
-                        if(empty($specKeys)) {
-                            $specKeys = [''];
-                            $specValues = [''];
-                        }
+                        if (empty($specKeys)) { $specKeys = ['']; $specValues = ['']; }
                     @endphp
-                    
+
                     @foreach($specKeys as $index => $keyVal)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start spec-row bg-gray-50 p-4 rounded-xl relative border border-gray-100">
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi (Kolom)</label>
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi</label>
                                 <input type="text" name="spec_keys[]" value="{{ $keyVal }}" placeholder="Contoh: Ukuran, Warna, Material"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 text-sm">
                             </div>
                             <div class="pr-8">
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Nilai / Isi Spesifikasi</label>
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Nilai</label>
                                 <input type="text" name="spec_values[]" value="{{ $specValues[$index] ?? '' }}" placeholder="Contoh: 50ml, Merah, Canvas"
-                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 text-sm">
                             </div>
-                            <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus spesifikasi ini">
+                            <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
                     @endforeach
                 </div>
-                @error('keterangan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const container = document.getElementById('specs-container');
-                        const addBtn = document.getElementById('add-spec-btn');
-
-                        addBtn.addEventListener('click', function() {
-                            const newRow = document.createElement('div');
-                            newRow.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start spec-row bg-gray-50 p-4 rounded-xl relative border border-gray-100';
-                            newRow.innerHTML = `
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi (Kolom)</label>
-                                    <input type="text" name="spec_keys[]" placeholder="Contoh: Ukuran, Warna, Material" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
-                                </div>
-                                <div class="pr-8">
-                                    <label class="block text-xs font-medium text-gray-500 mb-1">Nilai / Isi Spesifikasi</label>
-                                    <input type="text" name="spec_values[]" placeholder="Contoh: 50ml, Merah, Canvas" class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 text-sm">
-                                </div>
-                                <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors" title="Hapus spesifikasi ini"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                            `;
-                            container.appendChild(newRow);
-                        });
-
-                        container.addEventListener('click', function(e) {
-                            if(e.target.closest('.remove-spec-btn')) {
-                                const rows = container.querySelectorAll('.spec-row');
-                                if(rows.length > 0) {
-                                    e.target.closest('.spec-row').remove();
-                                }
-                            }
-                        });
-                    });
-                </script>
             </div>
 
+            {{-- Harga, Diskon, Stok --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Harga (Rp) <span class="text-red-500">*</span></label>
@@ -140,6 +107,7 @@
                 </div>
             </div>
 
+            {{-- Brand & Berat --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Brand</label>
@@ -153,6 +121,7 @@
                 </div>
             </div>
 
+            {{-- Checkbox --}}
             <div class="flex items-center gap-6">
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} class="w-4 h-4 rounded text-primary-500 focus:ring-primary-400">
@@ -164,40 +133,50 @@
                 </label>
             </div>
 
-            {{-- Existing Images --}}
+            {{-- Gambar Saat Ini --}}
             @if($product->images->count() > 0)
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Saat Ini</label>
-                <div class="flex gap-3 flex-wrap">
+            <div class="pt-5 border-t border-gray-100">
+                <label class="block text-sm font-semibold text-gray-800 mb-1">Gambar Saat Ini</label>
+                <p class="text-xs text-gray-400 mb-3">💡 Klik gambar untuk menjadikannya gambar utama. Klik ✕ untuk menghapus gambar.</p>
+                <div id="existing-images" class="flex gap-3 flex-wrap">
                     @foreach($product->images as $image)
-                    <div class="relative group">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" class="w-24 h-24 object-cover rounded-xl border-2 {{ $image->is_primary ? 'border-primary-400' : 'border-gray-200' }}">
-                        @if($image->is_primary)
-                            <span class="absolute top-1 left-1 bg-primary-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">Utama</span>
-                        @endif
-                        <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                            @if(!$image->is_primary)
-                                <button type="submit" form="form-primary-{{ $image->id }}" class="p-1.5 bg-white rounded-lg text-blue-600 hover:bg-blue-50" title="Set Utama">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                </button>
-                            @endif
-                                <button type="submit" form="form-delete-{{ $image->id }}" onclick="return confirm('Hapus gambar?')" class="p-1.5 bg-white rounded-lg text-red-600 hover:bg-red-50" title="Hapus">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                </button>
-                        </div>
+                    <div id="img-wrap-{{ $image->id }}" class="relative group cursor-pointer" data-image-id="{{ $image->id }}" data-is-primary="{{ $image->is_primary ? '1' : '0' }}">
+                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                            class="w-24 h-24 object-cover rounded-xl border-4 transition-all {{ $image->is_primary ? 'border-primary-400 shadow-md' : 'border-gray-200' }}"
+                            id="img-thumb-{{ $image->id }}">
+                        <span id="img-label-{{ $image->id }}"
+                            class="{{ $image->is_primary ? '' : 'hidden' }} absolute top-1 left-1 bg-primary-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">Utama</span>
+                        {{-- Set utama overlay (only shown when not primary) --}}
+                        <span class="set-primary-overlay {{ $image->is_primary ? 'hidden' : '' }} absolute inset-0 flex items-center justify-center bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 text-white text-xs font-semibold transition-opacity">Set Utama</span>
+                        {{-- Hapus --}}
+                        <button type="button" data-delete-id="{{ $image->id }}"
+                            class="delete-img-btn absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 shadow">✕</button>
                     </div>
                     @endforeach
                 </div>
+                <div id="img-action-msg" class="hidden mt-2 text-xs font-medium"></div>
             </div>
             @endif
 
+            {{-- Upload Gambar Baru --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Tambah Gambar Baru</label>
-                <input type="file" name="images[]" multiple accept="image/*" data-preview="image-preview"
-                    class="w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary-50 file:text-primary-600 file:font-medium file:cursor-pointer hover:file:bg-primary-100">
-                <div id="image-preview" class="flex gap-2 mt-3 flex-wrap"></div>
+                <label class="block text-sm font-semibold text-gray-800 mb-1">Tambah Gambar Baru</label>
+                <p class="text-xs text-gray-400 mb-3">Gambar pertama yang dipilih akan menjadi gambar utama (jika tidak ada gambar lain).</p>
+
+                <label id="drop-zone"
+                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary-300 rounded-xl cursor-pointer bg-primary-50 hover:bg-primary-100 transition-colors group">
+                    <svg class="w-9 h-9 text-primary-400 mb-1.5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-sm font-medium text-primary-600">Klik atau drag gambar ke sini</span>
+                    <span class="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — maks 2MB per file</span>
+                    <input id="image-input" type="file" name="images[]" multiple accept="image/*" class="hidden">
+                </label>
+
+                <div id="image-preview" class="flex gap-3 mt-4 flex-wrap"></div>
             </div>
 
+            {{-- Tombol --}}
             <div class="flex gap-3 pt-2">
                 <button type="submit" class="btn-primary text-white font-semibold py-2.5 px-8 rounded-xl text-sm">Update Produk</button>
                 <a href="{{ route('admin.products.index') }}" class="py-2.5 px-6 rounded-xl text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-50">Batal</a>
@@ -205,18 +184,204 @@
         </form>
     </div>
 </div>
+@endsection
 
-{{-- Helper forms for Image Actions (outside main form to prevent nesting) --}}
-@if($product->images->count() > 0)
-    @foreach($product->images as $image)
-        @if(!$image->is_primary)
-            <form id="form-primary-{{ $image->id }}" action="{{ route('admin.products.image.primary', $image) }}" method="POST" class="hidden">
-                @csrf @method('PUT')
-            </form>
-        @endif
-        <form id="form-delete-{{ $image->id }}" action="{{ route('admin.products.image.delete', $image) }}" method="POST" class="hidden">
-            @csrf @method('DELETE')
-        </form>
-    @endforeach
-@endif
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Spesifikasi ────────────────────────────────────────────
+    const specsContainer = document.getElementById('specs-container');
+    document.getElementById('add-spec-btn').addEventListener('click', function () {
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 items-start spec-row bg-gray-50 p-4 rounded-xl relative border border-gray-100';
+        row.innerHTML = `
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Nama Spesifikasi</label>
+                <input type="text" name="spec_keys[]" placeholder="Contoh: Ukuran, Warna, Material"
+                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 text-sm">
+            </div>
+            <div class="pr-8">
+                <label class="block text-xs font-medium text-gray-500 mb-1">Nilai</label>
+                <input type="text" name="spec_values[]" placeholder="Contoh: 50ml, Merah, Canvas"
+                    class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary-400 text-sm">
+            </div>
+            <button type="button" class="remove-spec-btn absolute top-4 right-4 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>`;
+        specsContainer.appendChild(row);
+    });
+    specsContainer.addEventListener('click', function (e) {
+        if (e.target.closest('.remove-spec-btn')) {
+            e.target.closest('.spec-row').remove();
+        }
+    });
+
+    // ── Gambar Existing: Set Utama (AJAX, tanpa reload halaman) ─
+    const msgBox = document.getElementById('img-action-msg');
+
+    function showMsg(text, isError = false) {
+        if (!msgBox) return;
+        msgBox.textContent  = text;
+        msgBox.className    = `mt-2 text-xs font-medium ${isError ? 'text-red-500' : 'text-green-600'}`;
+        msgBox.classList.remove('hidden');
+        setTimeout(() => msgBox.classList.add('hidden'), 3000);
+    }
+
+    function setPrimaryVisual(id) {
+        document.querySelectorAll('#existing-images [data-image-id]').forEach(wrap => {
+            const wId   = wrap.dataset.imageId;
+            const thumb = document.getElementById('img-thumb-' + wId);
+            const label = document.getElementById('img-label-' + wId);
+            const overlay = wrap.querySelector('.set-primary-overlay');
+            if (wId === String(id)) {
+                thumb.className  = thumb.className.replace('border-gray-200', 'border-primary-400 shadow-md');
+                label && label.classList.remove('hidden');
+                overlay && overlay.classList.add('hidden');
+            } else {
+                thumb.className  = thumb.className.replace('border-primary-400 shadow-md', 'border-gray-200');
+                label && label.classList.add('hidden');
+                overlay && overlay.classList.remove('hidden');
+            }
+        });
+    }
+
+    document.querySelectorAll('#existing-images [data-image-id]').forEach(wrap => {
+        wrap.addEventListener('click', function (e) {
+            // Skip if clicking delete button
+            if (e.target.closest('.delete-img-btn')) return;
+
+            const imageId   = this.dataset.imageId;
+            const isPrimary = this.dataset.isPrimary === '1';
+            if (isPrimary) return; // already primary
+
+            // Optimistic UI
+            setPrimaryVisual(imageId);
+            showMsg('Memperbarui gambar utama...');
+
+            fetch(`/admin/products/images/${imageId}/primary`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success || data.message) {
+                    showMsg('✓ Gambar utama berhasil diubah');
+                    // Update data attributes
+                    document.querySelectorAll('#existing-images [data-image-id]').forEach(w => {
+                        w.dataset.isPrimary = w.dataset.imageId === String(imageId) ? '1' : '0';
+                    });
+                } else {
+                    showMsg('Gagal mengubah gambar utama', true);
+                }
+            })
+            .catch(() => showMsg('Terjadi kesalahan jaringan', true));
+        });
+    });
+
+    // ── Gambar Existing: Hapus (AJAX) ─────────────────────────
+    document.querySelectorAll('.delete-img-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (!confirm('Hapus gambar ini?')) return;
+            const imageId = this.dataset.deleteId;
+
+            fetch(`/admin/products/images/${imageId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success || data.message) {
+                    const wrap = document.getElementById('img-wrap-' + imageId);
+                    if (wrap) wrap.remove();
+                    showMsg('✓ Gambar dihapus');
+                } else {
+                    showMsg('Gagal menghapus gambar', true);
+                }
+            })
+            .catch(() => showMsg('Terjadi kesalahan jaringan', true));
+        });
+    });
+
+    // ── Image Upload & Preview ─────────────────────────────────
+    const input    = document.getElementById('image-input');
+    const dropZone = document.getElementById('drop-zone');
+    const preview  = document.getElementById('image-preview');
+    let fileList   = [];
+    let primaryIdx = 0;
+
+    function buildDataTransfer() {
+        const dt = new DataTransfer();
+        fileList.forEach(f => dt.items.add(f));
+        input.files = dt.files;
+    }
+
+    function renderPreviews() {
+        preview.innerHTML = '';
+        fileList.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const wrap = document.createElement('div');
+                wrap.className = 'relative cursor-pointer group';
+                wrap.innerHTML = `
+                    <img src="${e.target.result}"
+                        class="w-24 h-24 object-cover rounded-xl border-4 transition-all ${idx === primaryIdx ? 'border-primary-400 shadow-md' : 'border-gray-200 opacity-80 hover:opacity-100'}">
+                    ${idx === primaryIdx
+                        ? '<span class="absolute top-1 left-1 bg-primary-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">Baru (Utama)</span>'
+                        : '<span class="absolute inset-0 flex items-center justify-center bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 text-white text-xs font-semibold transition-opacity">Set Utama</span>'
+                    }
+                    <button type="button" data-remove="${idx}" class="remove-img-btn absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 shadow">✕</button>`;
+
+                wrap.addEventListener('click', function (ev) {
+                    if (ev.target.closest('.remove-img-btn')) return;
+                    const reordered = [...fileList];
+                    const [primary] = reordered.splice(idx, 1);
+                    reordered.unshift(primary);
+                    fileList = reordered;
+                    primaryIdx = 0;
+                    buildDataTransfer();
+                    renderPreviews();
+                });
+
+                wrap.querySelector('.remove-img-btn').addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    fileList.splice(parseInt(this.dataset.remove), 1);
+                    if (primaryIdx >= fileList.length) primaryIdx = 0;
+                    buildDataTransfer();
+                    renderPreviews();
+                });
+
+                preview.appendChild(wrap);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    input.addEventListener('change', function () {
+        Array.from(this.files).forEach(f => fileList.push(f));
+        primaryIdx = 0;
+        buildDataTransfer();
+        renderPreviews();
+    });
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('bg-primary-100'); });
+    dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('bg-primary-100'));
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('bg-primary-100');
+        Array.from(e.dataTransfer.files).forEach(f => { if (f.type.startsWith('image/')) fileList.push(f); });
+        primaryIdx = 0;
+        buildDataTransfer();
+        renderPreviews();
+    });
+});
+</script>
 @endsection

@@ -89,7 +89,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.products.index')
+        return redirect()->route('admin.products.edit', $product)
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
@@ -106,12 +106,12 @@ class ProductController extends Controller
             ->with('success', 'Produk berhasil dihapus.');
     }
 
-    public function deleteImage(ProductImage $image): RedirectResponse
+    public function deleteImage(ProductImage $image)
     {
         Storage::disk('public')->delete($image->image_path);
 
         $wasPrimary = $image->is_primary;
-        $productId = $image->product_id;
+        $productId  = $image->product_id;
         $image->delete();
 
         // If deleted image was primary, set first remaining as primary
@@ -122,16 +122,24 @@ class ProductController extends Controller
             }
         }
 
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Gambar berhasil dihapus.']);
+        }
+
         return back()->with('success', 'Gambar berhasil dihapus.');
     }
 
-    public function setPrimaryImage(ProductImage $image): RedirectResponse
+    public function setPrimaryImage(ProductImage $image)
     {
         // Remove primary from all images of this product
         ProductImage::where('product_id', $image->product_id)
             ->update(['is_primary' => false]);
 
         $image->update(['is_primary' => true]);
+
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Gambar utama berhasil diubah.']);
+        }
 
         return back()->with('success', 'Gambar utama berhasil diubah.');
     }
